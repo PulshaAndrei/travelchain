@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -89,7 +89,6 @@ class RouteCreateScreen extends React.Component {
   removeRouteElement(i) {
     let routeElements = this.state.routeElements;
     routeElements.splice(i, 1);
-    console.log(i, routeElements);
     this.setState({ routeElements });
   }
 
@@ -103,57 +102,59 @@ class RouteCreateScreen extends React.Component {
           onLeftElementPress={() => this.props.navigation.goBack()}
           centerElement="Create Route"
         />
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="interactive"
-          onScroll={this.onScroll}
-        >
-          {this.state.imageUrl ?
-            <View style={styles.imageView}>
-              <Image
-                style={styles.image}
-                source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
-              />
-            </View>
-            : <TouchableOpacity onPress={() => {}}>
-              <View style={styles.uploadImageView}>
-                <Icon name="camera-alt" size={52} />
-                <Text>Upload media</Text>
+        <ScrollView>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior="padding"
+            keyboardVerticalOffset={0}
+          >
+            {this.state.imageUrl ?
+              <View style={styles.imageView}>
+                <Image
+                  style={styles.image}
+                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                />
               </View>
-            </TouchableOpacity>
-          }
-          <Subheader text="Title" />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(title) => this.setState({ title })}
-            value={this.state.title}
-          />
-          <Subheader text="Description" />
-          <TextInput
-            multiline = {true}
-            numberOfLines = {4}
-            style={[styles.textInput, styles.textAreaInput]}
-            onChangeText={(description) => this.setState({ description })}
-            value={this.state.description}
-          />
-          <Subheader text="Route Elements" />
-          {this.state.routeElements.map((routeElement, i) => (
-            <ListItem
-              key={'content' + i}
-              divider
-              leftElement={<Avatar text={routeElement.title[0] || ' '} />}
-              centerElement={{
-                primaryText: routeElement.title || ' ',
-                secondaryText: routeElement.description || ' ',
-              }}
-              rightElement="remove"
-              onRightElementPress={() => this.removeRouteElement(i)}
+              : <TouchableOpacity onPress={() => {}}>
+                <View style={styles.uploadImageView}>
+                  <Icon name="camera-alt" size={52} />
+                  <Text>Upload media</Text>
+                </View>
+              </TouchableOpacity>
+            }
+            <Subheader text="Title" />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(title) => this.setState({ title })}
+              value={this.state.title}
             />
-          ))}
-          <Button
-            primary
-            raised text="Add Route Element"
-            onPress={() => this.props.navigation.navigate('RouteElementCreate', { addElement: (el) => this.addRouteElement(el) })} />
+            <Subheader text="Description" />
+            <TextInput
+              multiline = {true}
+              numberOfLines = {4}
+              style={[styles.textInput, styles.textAreaInput]}
+              onChangeText={(description) => this.setState({ description })}
+              value={this.state.description}
+            />
+            <Subheader text="Route Elements" />
+            {this.state.routeElements.map((routeElement, i) => (
+              <ListItem
+                key={'content' + i}
+                divider
+                leftElement={<Avatar text={routeElement.title[0] || ' '} />}
+                centerElement={{
+                  primaryText: routeElement.title || ' ',
+                  secondaryText: routeElement.description || ' ',
+                }}
+                rightElement="remove"
+                onRightElementPress={() => this.removeRouteElement(i)}
+              />
+            ))}
+            <Button
+              primary
+              raised text="Add Route Element"
+              onPress={() => this.props.navigation.navigate('RouteElementCreate', { addElement: (el) => this.addRouteElement(el) })} />
+          </KeyboardAvoidingView>
         </ScrollView>
         <Button
           primary

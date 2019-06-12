@@ -86,7 +86,7 @@ class ContentsScreen extends React.Component {
           ))}
         </ScrollView>
         <ActionButton
-          style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.green400 }}}
+          style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.blue400 }}}
           onPress={() => this.props.navigation.push('ContentCreate')}
         />
         <BottomNavigation active={this.state.active} hidden={false} >

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import Container from '../components/Container';
 import {
   Button,
@@ -85,8 +85,8 @@ export default class RouteElementCreateScreen extends React.Component {
   }
 
   removeContent(i) {
-    let usedContent = this.state.usedContent;
-    usedContent = usedContent.splice(i);
+    const usedContent = this.state.usedContent;
+    usedContent.splice(i);
     this.setState({ usedContent });
   }
 
@@ -100,61 +100,63 @@ export default class RouteElementCreateScreen extends React.Component {
           onLeftElementPress={() => this.props.navigation.goBack()}
           centerElement="Create Route Element"
         />
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="interactive"
-          onScroll={this.onScroll}
-        >
-          {this.state.imageUrl ?
-            <View style={styles.imageView}>
-              <Image
-                style={styles.image}
-                source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
-              />
-            </View>
-            : <TouchableOpacity onPress={() => {}}>
-              <View style={styles.uploadImageView}>
-                <Icon name="camera-alt" size={52} />
-                <Text>Upload media</Text>
+        <ScrollView>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior="padding"
+            keyboardVerticalOffset={0}
+          >
+            {this.state.imageUrl ?
+              <View style={styles.imageView}>
+                <Image
+                  style={styles.image}
+                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                />
               </View>
-            </TouchableOpacity>
-          }
-          <Subheader text="Title" />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(title) => this.setState({ title })}
-            value={this.state.title}
-          />
-          <Subheader text="Description" />
-          <TextInput
-            multiline = {true}
-            numberOfLines = {4}
-            style={[styles.textInput, styles.textAreaInput]}
-            onChangeText={(description) => this.setState({ description })}
-            value={this.state.description}
-          />
-          <Subheader text="Used Content" />
-          {this.state.usedContent.map((content, i) => (
-            <ListItem
-              key={'content' + i}
-              divider
-              leftElement={<Avatar text={content.title[0]} />}
-              centerElement={{
-                primaryText: content.title,
-                secondaryText: content.description,
-              }}
-              rightElement="remove"
-              onRightElementPress={() => this.removeContent(i)}
+              : <TouchableOpacity onPress={() => {}}>
+                <View style={styles.uploadImageView}>
+                  <Icon name="camera-alt" size={52} />
+                  <Text>Upload media</Text>
+                </View>
+              </TouchableOpacity>
+            }
+            <Subheader text="Title" />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(title) => this.setState({ title })}
+              value={this.state.title}
             />
-          ))}
-          <Button
-            primary
-            raised
-            text="Add Content Link"
-            onPress={() => this.props.navigation.navigate('ContentLink', {
-              usedContent: this.state.usedContent,
-              addContent: (el) => this.addContent(el)
-            })} />
+            <Subheader text="Description" />
+            <TextInput
+              multiline = {true}
+              numberOfLines = {4}
+              style={[styles.textInput, styles.textAreaInput]}
+              onChangeText={(description) => this.setState({ description })}
+              value={this.state.description}
+            />
+            <Subheader text="Used Content" />
+            {this.state.usedContent.map((content, i) => (
+              <ListItem
+                key={'content' + i}
+                divider
+                leftElement={<Avatar text={content.title[0]} />}
+                centerElement={{
+                  primaryText: content.title,
+                  secondaryText: content.description,
+                }}
+                rightElement="remove"
+                onRightElementPress={() => this.removeContent(i)}
+              />
+            ))}
+            <Button
+              primary
+              raised
+              text="Add Content Link"
+              onPress={() => this.props.navigation.navigate('ContentLink', {
+                usedContent: this.state.usedContent,
+                addContent: (el) => this.addContent(el)
+              })} />
+          </KeyboardAvoidingView>
         </ScrollView>
         <Button
           primary

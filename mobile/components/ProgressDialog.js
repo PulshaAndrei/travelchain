@@ -3,7 +3,7 @@ import { Icon, View, StyleSheet, Text, ActivityIndicator, TouchableOpacity } fro
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLOR } from 'react-native-material-ui';
 
-export default ProgressDialog = ({ visible, status, text, onClose }) => (
+export default ProgressDialog = ({ visible, status, text, onClose }) => visible && (
   <TouchableOpacity onPress={() => status !== 'progress' && onClose()} style={[styles.container, !visible && { display: 'none' }]}>
       <View style={[styles.content, text && { width: '75%'}]}>
         <View style={styles.loading}>

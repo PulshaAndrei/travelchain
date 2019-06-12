@@ -97,7 +97,7 @@ class RoutesScreen extends React.Component {
           {routes.map((route, i) => this.renderRoute(route, i))}
         </ScrollView>
         <ActionButton
-          style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.green400 }}}
+          style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.blue400 }}}
           onPress={() => this.props.navigation.navigate('RouteCreate')} />
         <BottomNavigation active={this.state.active} hidden={false} >
             <BottomNavigation.Action

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -94,53 +94,55 @@ class ContentCreateScreen extends React.Component {
           onLeftElementPress={() => this.props.navigation.goBack()}
           centerElement="Create Content"
         />
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="interactive"
-          onScroll={this.onScroll}
-        >
-          {this.state.imageUrl ?
-            <View style={styles.imageView}>
-              <Image
-                style={styles.image}
-                source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
-              />
-            </View>
-            : <TouchableOpacity onPress={() => {}}>
-              <View style={styles.uploadImageView}>
-                <Icon name="camera-alt" size={52} />
-                <Text>Upload media</Text>
+        <ScrollView>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior="padding"
+            keyboardVerticalOffset={0}
+          >
+            {this.state.imageUrl ?
+              <View style={styles.imageView}>
+                <Image
+                  style={styles.image}
+                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                />
               </View>
-            </TouchableOpacity>
-          }
-          <Subheader text="Title" />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(title) => this.setState({ title })}
-            value={this.state.title}
-          />
-          <Subheader text="Description" />
-          <TextInput
-            multiline = {true}
-            numberOfLines = {4}
-            style={[styles.textInput, styles.textAreaInput]}
-            onChangeText={(description) => this.setState({ description })}
-            value={this.state.description}
-          />
-          <Subheader text="Royalty percent (from 0 to 1%)" />
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(royaltyPercent) => this.setState({ royaltyPercent })}
-            keyboardType="numeric"
-            value={this.state.royaltyPercent}
-          />
-          <Subheader text="Royalty price (in Travel Coins)" />
-          <TextInput
-            style={[styles.textInput, { marginBottom: 16 }]}
-            onChangeText={(royaltyPrice) => this.setState({ royaltyPrice })}
-            keyboardType="numeric"
-            value={this.state.royaltyPrice}
-          />
+              : <TouchableOpacity onPress={() => {}}>
+                <View style={styles.uploadImageView}>
+                  <Icon name="camera-alt" size={52} />
+                  <Text>Upload media</Text>
+                </View>
+              </TouchableOpacity>
+            }
+            <Subheader text="Title" />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(title) => this.setState({ title })}
+              value={this.state.title}
+            />
+            <Subheader text="Description" />
+            <TextInput
+              multiline = {true}
+              numberOfLines = {4}
+              style={[styles.textInput, styles.textAreaInput]}
+              onChangeText={(description) => this.setState({ description })}
+              value={this.state.description}
+            />
+            <Subheader text="Royalty percent (from 0 to 1%)" />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(royaltyPercent) => this.setState({ royaltyPercent })}
+              keyboardType="numeric"
+              value={this.state.royaltyPercent}
+            />
+            <Subheader text="Royalty price (in Travel Coins)" />
+            <TextInput
+              style={[styles.textInput, { marginBottom: 16 }]}
+              onChangeText={(royaltyPrice) => this.setState({ royaltyPrice })}
+              keyboardType="numeric"
+              value={this.state.royaltyPrice}
+            />
+          </KeyboardAvoidingView>
         </ScrollView>
         <Button
           primary

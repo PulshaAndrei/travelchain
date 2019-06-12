@@ -112,7 +112,7 @@ export default class RouteDetailsScreen extends React.Component {
             style={{container : styles.button}}
             onPress={() => this.props.navigation.navigate('BookRoute', { route })}
             text="Book" />}
-        <ProgressDialog visible={this.state.dialog} status="error" text="Some Error Text" onClose={() => this.setState({ dialog: false })} />
+        <ProgressDialog visible={this.state.dialog} status="success" text="Liked" onClose={() => this.setState({ dialog: false })} />
       </Container>
     );
   }
