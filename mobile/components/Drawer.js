@@ -2,6 +2,7 @@ import { View, StyleSheet } from 'react-native';
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Avatar, Drawer, COLOR } from 'react-native-material-ui';
+import { connect } from 'react-redux';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,26 +42,27 @@ const getActiveRouteState = function(route) {
   return getActiveRouteState(childActiveRoute);
 };
 
-export default class DrawerComponent extends React.Component {
+class DrawerComponent extends React.Component {
   get route() {
     return getActiveRouteState(this.props.navigation.state).key;
   }
 
   render() {
-    const firstName = "Test";
-    const lastName = "User";
+    const firstName = this.props.user.firstName;
+    const lastName = this.props.user.lastName;
+    const email = this.props.user.username;
 
     return (
       <View style={styles.container}>
         <Drawer style={{container: styles.drawerContainer, contentContainer: styles.drawerContentContainer }}>
           <Drawer.Header style={{contentContainer: styles.header }}>
             <Drawer.Header.Account
-              avatar={<Avatar text={firstName[0]} />}
+              avatar={<Avatar text={firstName && firstName[0]} />}
               footer={{
                 dense: true,
                 centerElement: {
                   primaryText: `${firstName} ${lastName}`,
-                  secondaryText: 'business@email.com',
+                  secondaryText: email,
                 },
               }}
             />
@@ -107,4 +109,9 @@ export default class DrawerComponent extends React.Component {
   }
 }
 
-DrawerComponent.propTypes = propTypes;
+export default connect(
+  (state) => ({
+    user: state.wallet.user
+  }),
+  { }
+)(DrawerComponent);

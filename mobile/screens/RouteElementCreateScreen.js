@@ -6,10 +6,8 @@ import {
   Avatar,
   ListItem,
   Toolbar,
-  BottomNavigation,
   Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
 
@@ -80,6 +78,18 @@ export default class RouteElementCreateScreen extends React.Component {
     title: 'RouteElementCreate',
   };
 
+  addContent(el) {
+    const usedContent = this.state.usedContent;
+    usedContent.push(el);
+    this.setState({ usedContent });
+  }
+
+  removeContent(i) {
+    let usedContent = this.state.usedContent;
+    usedContent = usedContent.splice(i);
+    this.setState({ usedContent });
+  }
+
   render() {
 
     return (
@@ -134,12 +144,27 @@ export default class RouteElementCreateScreen extends React.Component {
                 secondaryText: content.description,
               }}
               rightElement="remove"
-              onRightElementPress={() => {}}
+              onRightElementPress={() => this.removeContent(i)}
             />
           ))}
-          <Button primary raised text="Add Content Link" onPress={() => this.props.navigation.navigate('ContentLink')} />
+          <Button
+            primary
+            raised
+            text="Add Content Link"
+            onPress={() => this.props.navigation.navigate('ContentLink', {
+              usedContent: this.state.usedContent,
+              addContent: (el) => this.addContent(el)
+            })} />
         </ScrollView>
-        <Button primary raised style={{container : styles.button}} text="Save" />
+        <Button
+          primary
+          raised
+          style={{container : styles.button}}
+          onPress={() => {
+            this.props.navigation.state.params.addElement(this.state);
+            this.props.navigation.goBack();
+          }}
+          text="Save" />
       </Container>
     );
   }

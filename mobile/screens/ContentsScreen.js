@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
   ActionButton,
   Avatar,
-  ListItem,
   Toolbar,
   BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
+import { loadContents } from '../reducers/content';
 
 const styles = StyleSheet.create({
   card: {
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class ContentsScreen extends React.Component {
+class ContentsScreen extends React.Component {
   constructor(props) {
     super(props);
 
@@ -46,25 +45,17 @@ export default class ContentsScreen extends React.Component {
     };
   }
 
+  componentDidMount() {
+    this.props.loadContents();
+  }
+
   static navigationOptions = {
     title: 'Content',
   };
 
   render() {
-    const contents = [
-      {
-        title: 'Content Title',
-        description: 'Description 1'
-      },
-      {
-        title: 'Content Title 1',
-        description: 'Description 2'
-      },
-      {
-        title: 'Content Title 2',
-        description: 'Description 3'
-      },
-    ];
+    const contents = this.props.contents
+      .filter(el => this.state.active === 'all' ? true : el.username === this.props.user.username);
     return (
       <Container>
         <Toolbar
@@ -116,3 +107,11 @@ export default class ContentsScreen extends React.Component {
     );
   }
 }
+
+export default connect(
+  (state) => ({
+    user: state.wallet.user,
+    contents: state.content.contents,
+  }),
+  { loadContents }
+)(ContentsScreen);

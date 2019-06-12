@@ -1,17 +1,14 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
-  ActionButton,
   Avatar,
-  ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
+import { loadBookings } from '../reducers/booking';
 
 const styles = StyleSheet.create({
   card: {
@@ -37,9 +34,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class BookingsScreen extends React.Component {
+class BookingsScreen extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.loadBookings();
   }
 
   static navigationOptions = {
@@ -47,131 +48,11 @@ export default class BookingsScreen extends React.Component {
   };
 
   render() {
-    const activeBookings = [
-      {
-        title: 'Executing Title',
-        status: 'Executing',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-      {
-        title: 'Executing Title 2',
-        status: 'Executing',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-      {
-        title: 'In auction Title',
-        status: 'In auction',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-    ];
+    const activeBookings = this.props.bookings
+      .filter(el => el.status !== 'Finished');
 
-    const finishedBookings = [
-      {
-        title: 'Title 1',
-        status: 'Finished',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-      {
-        title: 'Title 2',
-        status: 'Finished',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-      {
-        title: 'Title 3',
-        status: 'Finished',
-        route: {
-          title: 'Route Details Title',
-          description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          status: 'Observable',
-          routeElements: [
-            {
-              title: 'Route Element Title',
-            },
-            {
-              title: 'Route Element Title 1',
-            },
-            {
-              title: 'Route Element Title 2',
-            },
-          ]
-        }
-      },
-    ]
+    const finishedBookings = this.props.bookings
+    .filter(el => el.status === 'Finished');
     return (
       <Container>
         <Toolbar
@@ -218,3 +99,11 @@ export default class BookingsScreen extends React.Component {
     );
   }
 }
+
+export default connect(
+  (state) => ({
+    user: state.wallet.user,
+    bookings: state.booking.bookings,
+  }),
+  { loadBookings }
+)(BookingsScreen);

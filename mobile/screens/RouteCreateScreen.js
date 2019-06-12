@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
   Button,
   Toolbar,
   Icon,
   Subheader,
   COLOR,
+  ListItem,
+  Avatar,
 } from 'react-native-material-ui';
+import { createRoute } from '../reducers/route';
 
 const styles = StyleSheet.create({
   imageView: {
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class RouteCreateScreen extends React.Component {
+class RouteCreateScreen extends React.Component {
   constructor(props) {
     super(props);
 
@@ -75,6 +79,19 @@ export default class RouteCreateScreen extends React.Component {
   static navigationOptions = {
     title: 'RouteCreate',
   };
+
+  addRouteElement(el) {
+    const routeElements = this.state.routeElements;
+    routeElements.push(el);
+    this.setState({ routeElements });
+  }
+
+  removeRouteElement(i) {
+    let routeElements = this.state.routeElements;
+    routeElements.splice(i, 1);
+    console.log(i, routeElements);
+    this.setState({ routeElements });
+  }
 
   render() {
 
@@ -124,19 +141,35 @@ export default class RouteCreateScreen extends React.Component {
             <ListItem
               key={'content' + i}
               divider
-              leftElement={<Avatar text={routeElement.title[0]} />}
+              leftElement={<Avatar text={routeElement.title[0] || ' '} />}
               centerElement={{
-                primaryText: routeElement.title,
-                secondaryText: routeElement.description,
+                primaryText: routeElement.title || ' ',
+                secondaryText: routeElement.description || ' ',
               }}
               rightElement="remove"
-              onRightElementPress={() => {}}
+              onRightElementPress={() => this.removeRouteElement(i)}
             />
           ))}
-          <Button primary raised text="Add Route Element" onPress={() => this.props.navigation.navigate('RouteElementCreate')} />
+          <Button
+            primary
+            raised text="Add Route Element"
+            onPress={() => this.props.navigation.navigate('RouteElementCreate', { addElement: (el) => this.addRouteElement(el) })} />
         </ScrollView>
-        <Button primary raised style={{container : styles.button}} text="Save" />
+        <Button
+          primary
+          raised
+          style={{container : styles.button}}
+          onPress={() => {
+            this.props.createRoute(this.state);
+            this.props.navigation.goBack();
+          }}
+          text="Save" />
       </Container>
     );
   }
 }
+
+export default connect(
+  () => ({}),
+  { createRoute }
+)(RouteCreateScreen);

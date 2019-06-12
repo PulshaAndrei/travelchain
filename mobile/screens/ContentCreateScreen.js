@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
   Button,
-  Avatar,
-  ListItem,
   Toolbar,
-  BottomNavigation,
   Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
+import { addContent } from '../reducers/content';
 
 const styles = StyleSheet.create({
   imageView: {
@@ -64,7 +62,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class ContentCreateScreen extends React.Component {
+class ContentCreateScreen extends React.Component {
   constructor(props) {
     super(props);
 
@@ -74,6 +72,7 @@ export default class ContentCreateScreen extends React.Component {
       description: '',
       royaltyPercent: '0',
       royaltyPrice: '0',
+      loadingState: null,
     };
   }
 
@@ -81,8 +80,12 @@ export default class ContentCreateScreen extends React.Component {
     title: 'ContentCreate',
   };
 
-  render() {
+  addContent() {
+    this.props.addContent(this.state);
+    this.props.navigation.goBack();
+  }
 
+  render() {
     return (
       <Container>
         <Toolbar
@@ -139,8 +142,18 @@ export default class ContentCreateScreen extends React.Component {
             value={this.state.royaltyPrice}
           />
         </ScrollView>
-        <Button primary raised style={{container : styles.button}} text="Create Content" />
+        <Button
+          primary
+          raised
+          style={{container : styles.button}}
+          onPress={() => this.addContent()}
+          text="Create Content" />
       </Container>
     );
   }
 }
+
+export default connect(
+  () => ({}),
+  { addContent }
+)(ContentCreateScreen);

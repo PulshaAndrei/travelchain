@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView } from 'react-native';
-import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
-  ActionButton,
   Avatar,
   ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
+import Container from '../components/Container';
+import { loadUser } from '../reducers/wallet';
 
 const styles = StyleSheet.create({
   card: {
@@ -42,9 +40,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class WalletScreen extends React.Component {
+class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
+  }
+
+  componentDidMount() {
+    this.props.loadUser();
   }
 
   static navigationOptions = {
@@ -52,49 +54,8 @@ export default class WalletScreen extends React.Component {
   };
 
   render() {
-    const money = 1567.4456;
-    const transactions = [
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-    ];
+    const money = this.props.user.travelCoins;
+    const transactions = this.props.transactions;
     return (
       <Container>
         <Toolbar
@@ -134,3 +95,11 @@ export default class WalletScreen extends React.Component {
     );
   }
 }
+
+export default connect(
+  (state) => ({
+    user: state.wallet.user,
+    transactions: state.wallet.transactions
+  }),
+  { loadUser }
+)(WalletScreen);

@@ -1,17 +1,16 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { connect } from 'react-redux';
 import Container from '../components/Container';
 import {
   ActionButton,
   Avatar,
-  ListItem,
   Toolbar,
   BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
+import { loadRoutes } from '../reducers/route';
 
 const styles = StyleSheet.create({
   card: {
@@ -37,13 +36,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class RoutesScreen extends React.Component {
+class RoutesScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       active: 'observing'
     };
+  }
+
+  componentDidMount() {
+    this.props.loadRoutes();
   }
 
   static navigationOptions = {
@@ -69,122 +72,12 @@ export default class RoutesScreen extends React.Component {
   }
 
   render() {
-    const routes = [
-      {
-        title: 'Route Details Title',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Observable',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-      {
-        title: 'Observable Title 2',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Observable',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-      {
-        title: 'Observable Title 3',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Observable',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-      {
-        title: 'Price Testing 1',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Price Testing',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-      {
-        title: 'Price Testing 2',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Price Testing',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-      {
-        title: 'Title 3',
-        description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-        status: 'Short List',
-        routeElements: [
-          {
-            title: 'Route Element Title',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 1',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-          {
-            title: 'Route Element Title 2',
-            description: 'Lorem ipsum, or lipsum as it is sometimes known, is dummy text used in laying out print, graphic or web designs. The passage is attributed to an unknown typesetter in the 15th century who is thought to have scrambled parts of Ciceros De Finibus Bo.',
-          },
-        ]
-      },
-    ];
+    const routes = this.props.routes
+      .filter(el => (
+        (this.state.active === 'observing' && (el.status === 'Observable' || el.status === 'Price Testing'))
+        || (this.state.active === 'shortlist' && el.status === 'Short List')
+        || (this.state.active === 'myroutes' && el.username === this.props.user.username)
+      ));
     return (
       <Container>
         <Toolbar
@@ -230,3 +123,11 @@ export default class RoutesScreen extends React.Component {
     );
   }
 }
+
+export default connect(
+  (state) => ({
+    user: state.wallet.user,
+    routes: state.route.routes,
+  }),
+  { loadRoutes }
+)(RoutesScreen);
