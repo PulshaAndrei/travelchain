@@ -58,6 +58,7 @@ export default class BookingDetailsScreen extends React.Component {
   };
 
   render() {
+    const booking = this.props.navigation.state.params.booking;
     const { route } = this.props.navigation.state.params.booking;
 
     return (
@@ -76,26 +77,35 @@ export default class BookingDetailsScreen extends React.Component {
           <View style={styles.imageView}>
             <Image
               style={styles.image}
-              source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+              source={{uri: route.imageUrl || 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
             />
           </View>
           <Text style={styles.title}>{route.title}</Text>
           <Subheader text="Description" />
           <Text style={styles.description}>{route.description}</Text>
+          <Subheader text="Price" />
+          <Text style={styles.description}>{booking.price} Travel Coins</Text>
+          <Subheader text="Booked Coins" />
+          <Text style={styles.description}>{booking.bookedCoins} TravelCoins</Text>
           {route.routeElements.map((routeElement, i) => (
             <ListItem
               key={'routeElement' + i}
               divider
-              leftElement={<Avatar text={routeElement.title[0]} />}
+              leftElement={routeElement.imageUrl
+                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: routeElement.imageUrl}} />} />)
+                : (<Avatar text={routeElement.title[0]} />)}
               centerElement={{
                 primaryText: routeElement.title,
+                secondaryText: routeElement.description,
               }}
               rightElement="info"
+              onRightElementPress={() => this.props.navigation.navigate('RouteElementDetails', { routeElement })}
               onPress={() => this.props.navigation.navigate('RouteElementDetails', { routeElement })}
             />
           ))}
         </ScrollView>
-        <Button primary raised style={{container : styles.button}} text="Finish Auction" />
+        {booking.status === 'In auction' && <Button primary raised style={{container : styles.button}} text="Finish Auction" />}
+        {booking.status === 'Executing' && <Button primary raised style={{container : styles.button}} text="See the Contracts" />}
       </Container>
     );
   }

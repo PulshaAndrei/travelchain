@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { connect } from 'react-redux';
 import Container from '../components/Container';
 import {
@@ -60,11 +60,13 @@ class RoutesScreen extends React.Component {
       <TouchableOpacity onPress={() => this.props.navigation.push('RouteDetails', { route })} key={'route'+i}>
         <View style={[styles.card, color && { backgroundColor: color }]}>
           <View style={{ marginRight: 10 }}>
-            <Avatar text={route.title[0]} style={!color ? {} : {container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />
+            {!route.imageUrl && <Avatar text={route.title[0]} style={!color ? {} : {container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />}
+            {route.imageUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: route.imageUrl}} />} />}
           </View>
-          <View>
-            <Text style={[styles.cardTitle, color && { color: COLOR.white }]}>{route.title}</Text>
-            <Text style={[styles.cardADesc, color && { color: COLOR.white }]}>Status: {route.status}</Text>
+          <View style={{ flex: 1 }}>
+            <Text numberOfLines={1} style={[styles.cardTitle, color && { color: COLOR.white }]}>{route.title}</Text>
+            <Text numberOfLines={2} style={[styles.cardADesc, color && { color: COLOR.white }]}>{route.description}</Text>
+            <Text style={[styles.cardADesc, { fontWeight: 'bold'}, color && { color: COLOR.white }]}>Status: {route.status}</Text>
           </View>
         </View>
       </TouchableOpacity>

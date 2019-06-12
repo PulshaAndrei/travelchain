@@ -83,7 +83,7 @@ export default class BookRouteScreen extends React.Component {
           <View style={styles.imageView}>
             <Image
               style={styles.image}
-              source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+              source={{uri: route.imageUrl || 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
             />
           </View>
           <Text style={styles.title}>{route.title}</Text>

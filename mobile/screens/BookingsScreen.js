@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -71,10 +71,11 @@ class BookingsScreen extends React.Component {
             <TouchableOpacity onPress={() => this.props.navigation.navigate('BookingDetails', { booking })} key={'booking'+i}>
               <View style={[styles.card, { backgroundColor: booking.status === 'Executing' ? COLOR.green400 : COLOR.orange400 }]}>
                 <View style={{ marginRight: 10 }}>
-                  <Avatar text={booking.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />
+                  {!booking.route.imageUrl && <Avatar text={booking.route.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />}
+                  {booking.route.imageUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: booking.route.imageUrl}} />} />}
                 </View>
                 <View>
-                  <Text style={[styles.cardTitle, { color: COLOR.white }]}>{booking.title}</Text>
+                  <Text style={[styles.cardTitle, { color: COLOR.white }]}>{booking.route.title}</Text>
                   <Text style={[styles.cardADesc, { color: COLOR.white }]}>Status: {booking.status}</Text>
                 </View>
               </View>
@@ -85,10 +86,11 @@ class BookingsScreen extends React.Component {
             <TouchableOpacity onPress={() => this.props.navigation.navigate('BookingDetails', { booking })} key={'booking-finished'+i}>
               <View style={styles.card}>
                 <View style={{ marginRight: 10 }}>
-                  <Avatar text={booking.title[0]} />
+                  {!booking.route.imageUrl && <Avatar text={booking.route.title[0]} />}
+                  {booking.route.imageUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: booking.route.imageUrl}} />} />}
                 </View>
                 <View>
-                  <Text style={styles.cardTitle}>{booking.title}</Text>
+                  <Text style={styles.cardTitle}>{booking.route.title}</Text>
                   <Text style={styles.cardDesc}>Status: {booking.status}</Text>
                 </View>
               </View>

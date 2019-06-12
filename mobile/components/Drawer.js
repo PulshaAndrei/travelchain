@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import React from 'react';
 import { PropTypes } from 'prop-types';
 import { Avatar, Drawer, COLOR } from 'react-native-material-ui';
@@ -57,7 +57,7 @@ class DrawerComponent extends React.Component {
         <Drawer style={{container: styles.drawerContainer, contentContainer: styles.drawerContentContainer }}>
           <Drawer.Header style={{contentContainer: styles.header }}>
             <Drawer.Header.Account
-              avatar={<Avatar text={firstName && firstName[0]} />}
+              avatar={<Avatar style={{container: { marginBottom: 10 }}} image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: 'http://mldd.nl/wp-content/uploads/2019/05/man_1074208.png'}} />} />}
               footer={{
                 dense: true,
                 centerElement: {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
   },
   cardDesc: {
     textAlign: 'left',
+    marginRight: 20,
   },
   button: {
     marginHorizontal: 8,
@@ -75,11 +76,12 @@ class ContentsScreen extends React.Component {
             <TouchableOpacity onPress={() => this.props.navigation.push('ContentDetails', { content })} key={'content'+i}>
               <View style={[styles.card, { backgroundColor: COLOR.green400 }]}>
                 <View style={{ marginRight: 10 }}>
-                  <Avatar text={content.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />
+                  {!content.imageUrl && <Avatar text={content.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />}
+                  {content.imageUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.imageUrl}} />} />}
                 </View>
-                <View>
-                  <Text style={[styles.cardTitle, { color: COLOR.white }]}>{content.title}</Text>
-                  <Text style={[styles.cardADesc, { color: COLOR.white }]}>{content.description}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text numberOfLines={1} style={[styles.cardTitle, { color: COLOR.white }]}>{content.title}</Text>
+                  <Text numberOfLines={3} style={[styles.cardADesc, { color: COLOR.white }]}>{content.description}</Text>
                 </View>
               </View>
             </TouchableOpacity>

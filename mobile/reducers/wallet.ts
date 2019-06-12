@@ -34,42 +34,32 @@ export function loadUser() {
       {
         title: 'Booking',
         date: new Date(),
-        value: 143.556
+        value: -140.50
+      },
+      {
+        title: 'Content Royalty',
+        date: new Date(),
+        value: 3.00
+      },
+      {
+        title: 'Content Royalty',
+        date: new Date(),
+        value: 2.5
+      },
+      {
+        title: 'Route Author Bonus',
+        date: new Date(),
+        value: 5.75
+      },
+      {
+        title: 'Like Bonus',
+        date: new Date(),
+        value: 0.01
       },
       {
         title: 'Booking',
         date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
-      },
-      {
-        title: 'Booking',
-        date: new Date(),
-        value: 143.556
+        value: -100.00
       },
     ];
 		dispatch(setUser(user));

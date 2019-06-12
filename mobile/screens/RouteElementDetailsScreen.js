@@ -2,14 +2,8 @@ import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
 import Container from '../components/Container';
 import {
-  Button,
-  Avatar,
-  ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
 
@@ -76,7 +70,7 @@ export default class RouteElementDetailsScreen extends React.Component {
           <View style={styles.imageView}>
             <Image
               style={styles.image}
-              source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+              source={{uri: routeElement.imageUrl || 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
             />
           </View>
           <Text style={styles.title}>{routeElement.title}</Text>
