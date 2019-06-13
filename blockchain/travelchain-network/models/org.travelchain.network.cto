@@ -1,0 +1,184 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Write your model definitions here
+ */
+
+namespace org.travelchain.network
+/**
+*	can be:
+*	- a tourist or viewer
+*	- a route creator
+*	- a content creator
+*	- a referal or consultant
+**/
+
+participant User identified by userId {
+    o String userId
+    o String username
+    o String firstName
+    o String lastName
+    o Double travelCoins
+    --> User referal optional
+}
+
+/**
+*	a person or a company which wants to participate in auctions
+**/
+
+participant Executor identified by executorId {
+    o String executorId
+    o String username
+    o String companyName
+    o Double travelCoins
+    --> Bet[] bets
+}
+
+/* Assets */
+
+enum RouteStatus {
+  	o OBSERVABLE
+    o PRICE_TESTING
+    o SHORT_LIST
+}
+
+asset Route identified by routeId {
+    o String routeId
+    o String title
+    o String description
+    o String imageUrl
+    o DateTime date
+    o Double price
+   	o RouteStatus status
+    --> RouteElement[] routeElements
+    --> Like[] likes
+    --> User creator
+}
+
+enum MediaType {
+    o IMAGE
+    o VIDEO
+}
+
+asset RouteElement identified by routeElementId {
+  	o String routeElementId
+    o String title
+    o String description
+    o String mediaUrl
+    o MediaType mediaType
+    o Double maxPrice optional
+    --> Content[] usedContents
+}
+
+asset Content identified by contentId {
+    o String contentId
+    o String title
+    o String description
+    o String mediaUrl
+    o Double royaltyPercent default = 0.00
+    o Double royaltyPrice default = 0.00
+    o MediaType mediaType
+    --> User creator
+}
+
+asset Like identified by likeId {
+  	o String likeId
+    --> Route route
+    --> User user
+}
+
+enum BookingStatus {
+  	o AUCTION
+    o EXECUTING
+    o FINISHED
+}
+
+asset Booking identified by bookingId {
+  	o String bookingId
+    o Integer discount
+    o Double bookedCoins
+    o BookingStatus status default = "AUCTION"
+    --> Route route
+    --> User owner
+    --> Contract[] contracts optional
+}
+
+asset Bet identified by betId {
+    o String betId
+    o Double price
+    --> Booking booking optional
+    --> Route route
+    --> RouteElement routeElement
+    --> Executor executor
+}
+  
+enum ContractStatus {
+    o CREATED
+    o FINISHED
+}
+
+asset Contract identified by contractId {
+    o String contractId
+    o Double price
+  	o ContractStatus status default = "CREATED"
+    --> Booking booking
+    --> RouteElement routeElement
+    --> Executor executor
+}
+
+
+/* Transactions */
+
+transaction BookRoute {
+  	o String bookingId
+    o Integer discount
+  	--> Route route
+    --> User owner
+}
+
+transaction LikeRoute {
+  	o String likeId
+    --> Route route
+    --> User user
+}
+
+transaction BetTestPricingRouteElement {
+  	o String betId
+    o Double price
+    --> Route route
+    --> RouteElement routeElement
+    --> Executor executor
+}
+
+transaction BetRouteElement {
+  	o String betId
+    o Double price
+    --> Booking booking
+    --> RouteElement routeElement
+    --> Route route
+    --> Executor executor
+}
+
+transaction FinishTestPricingAuction {
+    --> Route route
+}
+
+transaction FinishBookingAuction {
+    --> Booking booking
+}
+
+transaction FinishContract {
+    --> Contract contract
+}
