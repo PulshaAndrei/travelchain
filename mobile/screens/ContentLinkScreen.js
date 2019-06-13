@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Image } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -43,7 +43,9 @@ class ContentLinkScreen extends React.Component {
             <ListItem
               key={'content' + i}
               divider
-              leftElement={<Avatar text={content.title[0]} />}
+              leftElement={content.imageUrl
+                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.imageUrl}} />} />)
+                : (<Avatar text={content.title[0]} />)}
               centerElement={{
                 primaryText: content.title,
                 secondaryText: content.description,
