@@ -1,3 +1,4 @@
+import axios from 'axios';
 import api from "./api";
 
 const initState = {
@@ -40,7 +41,7 @@ export function addContent(newContent: any) {
       title: newContent.title,
       description: newContent.description,
       mediaType: 'IMAGE',
-      mediaUrl: 'https://www.rfigroup.com/sites/default/files/header/rfimediaheader.png',
+      mediaUrl: newContent.mediaUrl,
       royaltyPercent: newContent.royaltyPercent,
       royaltyPrice: newContent.royaltyPrice,
       creator: getState().wallet.user.userId

@@ -11,6 +11,9 @@ import {
   COLOR,
 } from 'react-native-material-ui';
 import { addContent } from '../reducers/content';
+import { pinFileToIPFS } from '../reducers/upload';
+import FormData from 'form-data';
+import { ImagePicker, Permissions, Constants } from 'expo';
 
 const styles = StyleSheet.create({
   imageView: {
@@ -81,10 +84,45 @@ class ContentCreateScreen extends React.Component {
     title: 'ContentCreate',
   };
 
+  async componentDidMount() {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  }
+
+  async selectImage() {
+    let response = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    if (!response.cancelled) {
+      let data = new FormData();
+      data.append('file', {
+        uri: response.uri,
+        type: response.type,
+        name: response.fileName,
+      });
+
+      try {
+        this.setState({ dialog: { status: 'progress' }});
+        const mediaUrl = await this.props.pinFileToIPFS(data);
+        this.setState({ dialog: { status: 'success', text: 'Successfull uploaded' }});
+        this.setState({ mediaUrl });
+      } catch (error) {
+        this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+      }
+    }
+  }
+
   onCloseDialog() {
     if (this.state.dialog.status === 'success') {
       this.setState({ dialog: {} });
-      this.props.navigation.goBack();
+      if (this.state.dialog.text === 'Success') {
+        this.props.navigation.goBack();
+      }
     } else if (this.state.dialog.status === 'error') {
       this.setState({ dialog: {} });
     }
@@ -119,10 +157,10 @@ class ContentCreateScreen extends React.Component {
               <View style={styles.imageView}>
                 <Image
                   style={styles.image}
-                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                  source={{uri: this.state.mediaUrl}}
                 />
               </View>
-              : <TouchableOpacity onPress={() => {}}>
+              : <TouchableOpacity  onPress={() => this.selectImage()}>
                 <View style={styles.uploadImageView}>
                   <Icon name="camera-alt" size={52} />
                   <Text>Upload media</Text>
@@ -173,5 +211,5 @@ class ContentCreateScreen extends React.Component {
 
 export default connect(
   () => ({}),
-  { addContent }
+  { addContent, pinFileToIPFS }
 )(ContentCreateScreen);

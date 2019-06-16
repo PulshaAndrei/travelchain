@@ -52,7 +52,7 @@ export function createRoute(newRoute: any) {
         title: elem.title,
         description: elem.description,
         mediaType: 'IMAGE',
-        mediaUrl: 'https://www.rfigroup.com/sites/default/files/header/rfimediaheader.png',
+        mediaUrl: elem.mediaUrl,
         usedContents: elem.usedContent.map(content => content.contentId),
       }
       await api.post('RouteElement', routeElement);
@@ -62,7 +62,7 @@ export function createRoute(newRoute: any) {
       routeId: Math.random().toString(36).substr(2, 9),
       title: newRoute.title,
       description: newRoute.description,
-      imageUrl: 'https://www.rfigroup.com/sites/default/files/header/rfimediaheader.png',
+      imageUrl: newRoute.imageUrl,
       date: '2019-06-14T08:59:35.034Z',
       status: 'OBSERVABLE',
       likes: [],

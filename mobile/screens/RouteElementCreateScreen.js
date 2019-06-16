@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import Container from '../components/Container';
+import { connect } from 'react-redux';
 import {
   Button,
   Avatar,
@@ -10,6 +11,9 @@ import {
   Subheader,
   COLOR,
 } from 'react-native-material-ui';
+import { pinFileToIPFS } from '../reducers/upload';
+import FormData from 'form-data';
+import { ImagePicker, Permissions, Constants } from 'expo';
 
 const styles = StyleSheet.create({
   imageView: {
@@ -62,21 +66,61 @@ const styles = StyleSheet.create({
   }
 });
 
-export default class RouteElementCreateScreen extends React.Component {
+class RouteElementCreateScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      imageUrl: null,
+      mediaUrl: null,
       title: '',
       description: '',
-      usedContent: []
+      usedContent: [],
+      dialog: {}
     };
   }
 
   static navigationOptions = {
     title: 'RouteElementCreate',
   };
+
+  async componentDidMount() {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  }
+
+  async selectImage() {
+    let response = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    if (!response.cancelled) {
+      let data = new FormData();
+      data.append('file', {
+        uri: response.uri,
+        type: response.type,
+        name: response.fileName,
+      });
+
+      try {
+        this.setState({ dialog: { status: 'progress' }});
+        const mediaUrl = await this.props.pinFileToIPFS(data);
+        this.setState({ dialog: { status: 'success', text: 'Successfull uploaded' }});
+        this.setState({ mediaUrl });
+      } catch (error) {
+        this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+      }
+    }
+  }
+
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success' || this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
 
   addContent(el) {
     const usedContent = this.state.usedContent;
@@ -106,14 +150,14 @@ export default class RouteElementCreateScreen extends React.Component {
             behavior="padding"
             keyboardVerticalOffset={0}
           >
-            {this.state.imageUrl ?
+            {this.state.mediaUrl ?
               <View style={styles.imageView}>
                 <Image
                   style={styles.image}
-                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                  source={{uri: this.state.mediaUrl}}
                 />
               </View>
-              : <TouchableOpacity onPress={() => {}}>
+              : <TouchableOpacity onPress={() => this.selectImage()}>
                 <View style={styles.uploadImageView}>
                   <Icon name="camera-alt" size={52} />
                   <Text>Upload media</Text>
@@ -167,7 +211,13 @@ export default class RouteElementCreateScreen extends React.Component {
             this.props.navigation.goBack();
           }}
           text="Save" />
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }
 }
+
+export default connect(
+  () => ({}),
+  { pinFileToIPFS }
+)(RouteElementCreateScreen);

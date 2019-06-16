@@ -12,6 +12,9 @@ import {
   Avatar,
 } from 'react-native-material-ui';
 import { createRoute } from '../reducers/route';
+import { pinFileToIPFS } from '../reducers/upload';
+import FormData from 'form-data';
+import { ImagePicker, Permissions, Constants } from 'expo';
 
 const styles = StyleSheet.create({
   imageView: {
@@ -81,6 +84,39 @@ class RouteCreateScreen extends React.Component {
     title: 'RouteCreate',
   };
 
+  async componentDidMount() {
+    if (Constants.platform.ios) {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        alert('Sorry, we need camera roll permissions to make this work!');
+      }
+    }
+  }
+
+  async selectImage() {
+    let response = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+    });
+
+    if (!response.cancelled) {
+      let data = new FormData();
+      data.append('file', {
+        uri: response.uri,
+        type: response.type,
+        name: response.fileName,
+      });
+
+      try {
+        this.setState({ dialog: { status: 'progress' }});
+        const imageUrl = await this.props.pinFileToIPFS(data);
+        this.setState({ dialog: { status: 'success', text: 'Successfull uploaded' }});
+        this.setState({ imageUrl });
+      } catch (error) {
+        this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+      }
+    }
+  }
+
   addRouteElement(el) {
     const routeElements = this.state.routeElements;
     routeElements.push(el);
@@ -96,7 +132,9 @@ class RouteCreateScreen extends React.Component {
   onCloseDialog() {
     if (this.state.dialog.status === 'success') {
       this.setState({ dialog: {} });
-      this.props.navigation.goBack();
+      if (this.state.dialog.text === 'Success') {
+        this.props.navigation.goBack();
+      }
     } else if (this.state.dialog.status === 'error') {
       this.setState({ dialog: {} });
     }
@@ -132,10 +170,10 @@ class RouteCreateScreen extends React.Component {
               <View style={styles.imageView}>
                 <Image
                   style={styles.image}
-                  source={{uri: 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+                  source={{uri: this.state.imageUrl}}
                 />
               </View>
-              : <TouchableOpacity onPress={() => {}}>
+              : <TouchableOpacity onPress={() => this.selectImage()}>
                 <View style={styles.uploadImageView}>
                   <Icon name="camera-alt" size={52} />
                   <Text>Upload media</Text>
@@ -190,5 +228,5 @@ class RouteCreateScreen extends React.Component {
 
 export default connect(
   () => ({}),
-  { createRoute }
+  { createRoute, pinFileToIPFS }
 )(RouteCreateScreen);
