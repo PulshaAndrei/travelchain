@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import Container from '../components/Container';
 import { connect } from 'react-redux';
 import {
@@ -56,7 +56,9 @@ class ContentsScreen extends React.Component {
 
   render() {
     const contents = this.props.contents
-      .filter(el => this.state.active === 'all' ? true : el.username === this.props.user.username);
+      .filter(el => this.state.active === 'all'
+        ? true
+        : el.creator === `resource:org.travelchain.network.User#${this.props.user.userId}`);
     return (
       <Container>
         <Toolbar
@@ -70,22 +72,26 @@ class ContentsScreen extends React.Component {
           keyboardDismissMode="interactive"
           onScroll={this.onScroll}
         >
-          {this.state.active === 'all' && <Subheader text="All Content" />}
-          {this.state.active === 'mycontent' && <Subheader text="My Content" />}
-          {contents.map((content, i) => (
-            <TouchableOpacity onPress={() => this.props.navigation.push('ContentDetails', { content })} key={'content'+i}>
-              <View style={[styles.card, { backgroundColor: COLOR.green400 }]}>
-                <View style={{ marginRight: 10 }}>
-                  {!content.imageUrl && <Avatar text={content.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />}
-                  {content.imageUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.imageUrl}} />} />}
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text numberOfLines={1} style={[styles.cardTitle, { color: COLOR.white }]}>{content.title}</Text>
-                  <Text numberOfLines={3} style={[styles.cardADesc, { color: COLOR.white }]}>{content.description}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
+          {this.props.loading && <ActivityIndicator size="large" style={{ marginTop: 50 }} />}
+          {!this.props.loading && 
+            <View>
+              {this.state.active === 'all' && <Subheader text="All Content" />}
+              {this.state.active === 'mycontent' && <Subheader text="My Content" />}
+              {contents.map((content, i) => (
+                <TouchableOpacity onPress={() => this.props.navigation.push('ContentDetails', { content })} key={'content'+i}>
+                  <View style={[styles.card, { backgroundColor: COLOR.green400 }]}>
+                    <View style={{ marginRight: 10 }}>
+                      {!content.mediaUrl && <Avatar text={content.title[0]} style={{container: { backgroundColor: COLOR.white }, content: { color: COLOR.black }}} />}
+                      {content.mediaUrl && <Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.mediaUrl}} />} />}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text numberOfLines={1} style={[styles.cardTitle, { color: COLOR.white }]}>{content.title}</Text>
+                      <Text numberOfLines={3} style={[styles.cardADesc, { color: COLOR.white }]}>{content.description}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>}
         </ScrollView>
         <ActionButton
           style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.blue400 }}}
@@ -114,6 +120,7 @@ export default connect(
   (state) => ({
     user: state.wallet.user,
     contents: state.content.contents,
+    loading: state.content.loading
   }),
   { loadContents }
 )(ContentsScreen);

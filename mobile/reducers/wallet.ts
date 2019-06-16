@@ -1,5 +1,8 @@
+import API from './api';
+
 const initState = {
-	user: {},
+  user: {},
+  loading: false,
 	transactions: [],
 };
 	
@@ -7,11 +10,17 @@ export default function wallet(state = initState, action: any) {
 	switch (action.type) {
 		case 'SET_USER':
 			return { ...state, user: action.payload };
-		case 'SET_TRANSACTIONS':
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_TRANSACTIONS':
 			return { ...state, transactions: action.payload };
 		default:
 			return state;
 	}
+}
+
+function setLoading(loading: boolean) {
+  return (dispatch: any) => dispatch({ type: 'SET_LOADING', payload: loading });
 }
 
 function setUser(user: any) {
@@ -24,12 +33,8 @@ function setTransactions(transactions: any[]) {
 
 export function loadUser() {
 	return async (dispatch: any) => {
-		const user = {
-			firstName: 'Test',
-			lastName: 'User',
-			username: 'business@email.com',
-			travelCoins: 156.56
-		};
+    dispatch(setLoading(true));
+    const user = (await API.get('User')).data[0];
 		const transactions = [
       {
         title: 'Booking',
@@ -62,7 +67,9 @@ export function loadUser() {
         value: -100.00
       },
     ];
-		dispatch(setUser(user));
-		dispatch(setTransactions(transactions));
+    dispatch(setUser(user));
+    dispatch(setTransactions(transactions));
+    
+    dispatch(setLoading(false));
 	}
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import Container from '../components/Container';
 import {
@@ -54,8 +54,8 @@ class RoutesScreen extends React.Component {
   };
 
   renderRoute(route, i) {
-    const color = route.status === 'Observable' ? null :
-      (route.status === 'Short List' ? COLOR.green400 : COLOR.orange400);
+    const color = route.status === 'OBSERVABLE' ? null :
+      (route.status === 'SHORT_LIST' ? COLOR.green400 : COLOR.orange400);
     return (
       <TouchableOpacity onPress={() => this.props.navigation.push('RouteDetails', { route })} key={'route'+i}>
         <View style={[styles.card, color && { backgroundColor: color }]}>
@@ -66,7 +66,9 @@ class RoutesScreen extends React.Component {
           <View style={{ flex: 1 }}>
             <Text numberOfLines={1} style={[styles.cardTitle, color && { color: COLOR.white }]}>{route.title}</Text>
             <Text numberOfLines={2} style={[styles.cardADesc, color && { color: COLOR.white }]}>{route.description}</Text>
-            <Text style={[styles.cardADesc, { fontWeight: 'bold'}, color && { color: COLOR.white }]}>Status: {route.status}</Text>
+            <Text style={[styles.cardADesc, { fontWeight: 'bold'}, color && { color: COLOR.white }]}>
+              Status: {route.status === 'OBSERVABLE' ? 'Observable' : (route.status === 'PRICE_TESTING' ? 'Price Testing' : 'Short List')}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -76,9 +78,9 @@ class RoutesScreen extends React.Component {
   render() {
     const routes = this.props.routes
       .filter(el => (
-        (this.state.active === 'observing' && (el.status === 'Observable' || el.status === 'Price Testing'))
-        || (this.state.active === 'shortlist' && el.status === 'Short List')
-        || (this.state.active === 'myroutes' && el.username === this.props.user.username)
+        (this.state.active === 'observing' && (el.status === 'OBSERVABLE' || el.status === 'PRICE_TESTING'))
+        || (this.state.active === 'shortlist' && el.status === 'SHORT_LIST')
+        || (this.state.active === 'myroutes' && el.creator === `resource:org.travelchain.network.User#${this.props.user.userId}`)
       ));
     return (
       <Container>
@@ -93,10 +95,14 @@ class RoutesScreen extends React.Component {
           keyboardDismissMode="interactive"
           onScroll={this.onScroll}
         >
-          {this.state.active === 'observing' && <Subheader text="Observing Routes" />}
-          {this.state.active === 'shortlist' && <Subheader text="Short List" />}
-          {this.state.active === 'myroutes' && <Subheader text="My Routes" />}
-          {routes.map((route, i) => this.renderRoute(route, i))}
+        {this.props.loading && <ActivityIndicator size="large" style={{ marginTop: 50 }} />}
+        {!this.props.loading && 
+          <View>
+            {this.state.active === 'observing' && <Subheader text="Observing Routes" />}
+            {this.state.active === 'shortlist' && <Subheader text="Short List" />}
+            {this.state.active === 'myroutes' && <Subheader text="My Routes" />}
+            {routes.map((route, i) => this.renderRoute(route, i))}
+          </View>}
         </ScrollView>
         <ActionButton
           style={{ positionContainer: { bottom: 76 }, container: { shadowRadius: 5, backgroundColor: COLOR.blue400 }}}
@@ -130,6 +136,7 @@ export default connect(
   (state) => ({
     user: state.wallet.user,
     routes: state.route.routes,
+    loading: state.route.loading,
   }),
   { loadRoutes }
 )(RoutesScreen);

@@ -43,8 +43,8 @@ class ContentLinkScreen extends React.Component {
             <ListItem
               key={'content' + i}
               divider
-              leftElement={content.imageUrl
-                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.imageUrl}} />} />)
+              leftElement={content.mediaUrl
+                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: content.mediaUrl}} />} />)
                 : (<Avatar text={content.title[0]} />)}
               centerElement={{
                 primaryText: content.title,

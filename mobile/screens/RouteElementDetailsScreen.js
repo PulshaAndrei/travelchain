@@ -70,7 +70,7 @@ export default class RouteElementDetailsScreen extends React.Component {
           <View style={styles.imageView}>
             <Image
               style={styles.image}
-              source={{uri: routeElement.imageUrl || 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
+              source={{uri: routeElement.mediaUrl || 'http://greecechinabusiness.com/wp-content/uploads/2016/07/travel-tourism-city-landmarks-1050x600_c.jpg'}}
             />
           </View>
           <Text style={styles.title}>{routeElement.title}</Text>

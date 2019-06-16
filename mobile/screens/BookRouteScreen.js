@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
 import Container from '../components/Container';
+import { bookRoute } from '../reducers/route';
+import { connect } from 'react-redux';
 import {
   Button,
   Avatar,
   ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
 
@@ -44,18 +43,38 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class BookRouteScreen extends React.Component {
+class BookRouteScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedDiscount: 10
+      selectedDiscount: 10,
+      dialog: {}
     };
   }
 
   static navigationOptions = {
     title: 'BookRoute',
   };
+
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success') {
+      this.setState({ dialog: {} });
+      this.props.navigation.navigate('Bookings');
+    } else if (this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
+
+  async bookRoute() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.bookRoute(this.props.navigation.state.params.route.routeId, this.state.selectedDiscount);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
+  }
 
   render() {
     const { route } = this.props.navigation.state.params;
@@ -106,8 +125,14 @@ export default class BookRouteScreen extends React.Component {
             />
           ))}
         </ScrollView>
-        <Button primary raised style={{container : styles.button}} text="Confirm Booking" />
+        <Button primary raised style={{container : styles.button}} text="Confirm Booking" onPress={() => this.bookRoute()} />
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }
 }
+
+export default connect(
+  () => ({}),
+  { bookRoute }
+)(BookRouteScreen);

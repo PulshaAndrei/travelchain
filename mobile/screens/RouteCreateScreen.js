@@ -72,7 +72,8 @@ class RouteCreateScreen extends React.Component {
       imageUrl: null,
       title: '',
       description: '',
-      routeElements: []
+      routeElements: [],
+      dialog: {}
     };
   }
 
@@ -90,6 +91,25 @@ class RouteCreateScreen extends React.Component {
     let routeElements = this.state.routeElements;
     routeElements.splice(i, 1);
     this.setState({ routeElements });
+  }
+
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success') {
+      this.setState({ dialog: {} });
+      this.props.navigation.goBack();
+    } else if (this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
+
+  async addRoute() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.createRoute(this.state);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
   }
 
   render() {
@@ -160,11 +180,9 @@ class RouteCreateScreen extends React.Component {
           primary
           raised
           style={{container : styles.button}}
-          onPress={() => {
-            this.props.createRoute(this.state);
-            this.props.navigation.goBack();
-          }}
+          onPress={() => this.addRoute()}
           text="Save" />
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }

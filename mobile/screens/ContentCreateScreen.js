@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Text, TextInput, StyleSheet, View, ScrollView, Image, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import Container from '../components/Container';
+import ProgressDialog from '../components/ProgressDialog';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -67,12 +68,12 @@ class ContentCreateScreen extends React.Component {
     super(props);
 
     this.state = {
-      imageUrl: null,
+      mediaUrl: null,
       title: '',
       description: '',
       royaltyPercent: '0',
       royaltyPrice: '0',
-      loadingState: null,
+      dialog: {},
     };
   }
 
@@ -80,9 +81,23 @@ class ContentCreateScreen extends React.Component {
     title: 'ContentCreate',
   };
 
-  addContent() {
-    this.props.addContent(this.state);
-    this.props.navigation.goBack();
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success') {
+      this.setState({ dialog: {} });
+      this.props.navigation.goBack();
+    } else if (this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
+
+  async addContent() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.addContent(this.state);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
   }
 
   render() {
@@ -100,7 +115,7 @@ class ContentCreateScreen extends React.Component {
             behavior="padding"
             keyboardVerticalOffset={0}
           >
-            {this.state.imageUrl ?
+            {this.state.mediaUrl ?
               <View style={styles.imageView}>
                 <Image
                   style={styles.image}
@@ -150,6 +165,7 @@ class ContentCreateScreen extends React.Component {
           style={{container : styles.button}}
           onPress={() => this.addContent()}
           text="Create Content" />
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }

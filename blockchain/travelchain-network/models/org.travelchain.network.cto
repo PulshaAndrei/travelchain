@@ -60,10 +60,10 @@ asset Route identified by routeId {
     o String description
     o String imageUrl
     o DateTime date
-    o Double price
+    o Double price optional
    	o RouteStatus status
     --> RouteElement[] routeElements
-    --> Like[] likes
+    --> Like[] likes optional
     --> User creator
 }
 
@@ -79,7 +79,7 @@ asset RouteElement identified by routeElementId {
     o String mediaUrl
     o MediaType mediaType
     o Double maxPrice optional
-    --> Content[] usedContents
+    --> Content[] usedContents optional
 }
 
 asset Content identified by contentId {

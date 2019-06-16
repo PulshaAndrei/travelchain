@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, StyleSheet, View, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import {
   Avatar,
@@ -64,33 +64,37 @@ class WalletScreen extends React.Component {
           onLeftElementPress={() => this.props.navigation.openDrawer()}
           centerElement="Wallet"
         />
-        <Subheader text="TravelCoin Wallet" />
-        <View style={styles.card}>
-          <Avatar icon="monetization-on" style={{container: styles.moneyIcon}} iconSize={45} iconColor={COLOR.yellow600} />
+        {this.props.loading && <ActivityIndicator size="large" style={{ marginTop: 50 }} />}
+        {!this.props.loading && 
           <View>
-            <Text style={styles.moneyNumber}>{Math.round(money * 100) / 100}</Text>
-            <Text style={styles.moneyCurrency}>Travel Coins</Text>
-          </View>
-        </View>
-        <Subheader text="Last transactions" />
-        <ScrollView
-          keyboardShouldPersistTaps="always"
-          keyboardDismissMode="interactive"
-          onScroll={this.onScroll}
-        >
-          {transactions.map((transaction, i) => (
-            <ListItem
-              key={transaction.title + i}
-              divider
-              leftElement={<Avatar text={transaction.title[0]} />}
-              centerElement={{
-                primaryText: transaction.title,
-                secondaryText: `Travel Coins: ${Math.round(transaction.value * 100) / 100}`,
-              }}
-              rightElement="info"
-            />
-          ))}
-        </ScrollView>
+            <Subheader text="TravelCoin Wallet" />
+              <View style={styles.card}>
+                <Avatar icon="monetization-on" style={{container: styles.moneyIcon}} iconSize={45} iconColor={COLOR.yellow600} />
+                <View>
+                  <Text style={styles.moneyNumber}>{Math.round(money * 100) / 100}</Text>
+                  <Text style={styles.moneyCurrency}>Travel Coins</Text>
+                </View>
+              </View>
+              <Subheader text="Last transactions" />
+              <ScrollView
+                keyboardShouldPersistTaps="always"
+                keyboardDismissMode="interactive"
+                onScroll={this.onScroll}
+              >
+                {transactions.map((transaction, i) => (
+                  <ListItem
+                    key={transaction.title + i}
+                    divider
+                    leftElement={<Avatar text={transaction.title[0]} />}
+                    centerElement={{
+                      primaryText: transaction.title,
+                      secondaryText: `Travel Coins: ${Math.round(transaction.value * 100) / 100}`,
+                    }}
+                    rightElement="info"
+                  />
+                ))}
+              </ScrollView>
+          </View>}
       </Container>
     );
   }
@@ -99,6 +103,7 @@ class WalletScreen extends React.Component {
 export default connect(
   (state) => ({
     user: state.wallet.user,
+    loading: state.wallet.loading,
     transactions: state.wallet.transactions
   }),
   { loadUser }

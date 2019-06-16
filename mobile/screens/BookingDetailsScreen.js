@@ -1,15 +1,14 @@
 import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
 import Container from '../components/Container';
+import { finishBookingAuction, finishContracts } from '../reducers/booking';
+import { connect } from 'react-redux';
 import {
   Button,
   Avatar,
   ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
 
@@ -44,18 +43,47 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class BookingDetailsScreen extends React.Component {
+class BookingDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      active: 'observing'
+      dialog: {}
     };
   }
 
   static navigationOptions = {
     title: 'BookingDetails',
   };
+
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success') {
+      this.setState({ dialog: {} });
+      this.props.navigation.navigate('Bookings');
+    } else if (this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
+
+  async finishBookingAuction() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.finishBookingAuction(this.props.navigation.state.params.booking.bookingId);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
+  }
+
+  async finishContracts() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.finishContracts(this.props.navigation.state.params.booking);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
+  }
 
   render() {
     const booking = this.props.navigation.state.params.booking;
@@ -84,29 +112,37 @@ export default class BookingDetailsScreen extends React.Component {
           <Subheader text="Description" />
           <Text style={styles.description}>{route.description}</Text>
           <Subheader text="Price" />
-          <Text style={styles.description}>{booking.price} Travel Coins</Text>
+          <Text style={styles.description}>{booking.route.price} Travel Coins</Text>
           <Subheader text="Booked Coins" />
           <Text style={styles.description}>{booking.bookedCoins} TravelCoins</Text>
           {route.routeElements.map((routeElement, i) => (
             <ListItem
               key={'routeElement' + i}
               divider
-              leftElement={routeElement.imageUrl
-                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: routeElement.imageUrl}} />} />)
+              leftElement={routeElement.mediaUrl
+                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: routeElement.mediaUrl}} />} />)
                 : (<Avatar text={routeElement.title[0]} />)}
               centerElement={{
                 primaryText: routeElement.title,
-                secondaryText: routeElement.description,
+                secondaryText: booking.status === 'AUCTION'
+                  ? `Bets: ${routeElement.bets}`
+                  : routeElement.description,
               }}
-              rightElement="info"
+              rightElement={booking.status === 'AUCTION' ? 'work' : 'info'}
               onRightElementPress={() => this.props.navigation.navigate('RouteElementDetails', { routeElement })}
               onPress={() => this.props.navigation.navigate('RouteElementDetails', { routeElement })}
             />
           ))}
         </ScrollView>
-        {booking.status === 'In auction' && <Button primary raised style={{container : styles.button}} text="Finish Auction" />}
-        {booking.status === 'Executing' && <Button primary raised style={{container : styles.button}} text="See the Contracts" />}
+        {booking.status === 'AUCTION' && <Button primary raised style={{container : styles.button}} text="Finish Auction" onPress={() => this.finishBookingAuction()} />}
+        {booking.status === 'EXECUTING' && <Button primary raised style={{container : styles.button}} text="Finish Contracts" onPress={() => this.finishContracts() } />}
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }
 }
+
+export default connect(
+  () => ({}),
+  { finishBookingAuction, finishContracts }
+)(BookingDetailsScreen);

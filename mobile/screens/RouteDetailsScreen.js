@@ -2,16 +2,15 @@ import * as React from 'react';
 import { Text, StyleSheet, View, ScrollView, Image } from 'react-native';
 import Container from '../components/Container';
 import ProgressDialog from '../components/ProgressDialog';
+import { likeRoute, finishPriceTestingAuction } from '../reducers/route';
+import { connect } from 'react-redux';
 
 import {
   Button,
   Avatar,
   ListItem,
   Toolbar,
-  BottomNavigation,
-  Icon,
   Subheader,
-  Card,
   COLOR,
 } from 'react-native-material-ui';
 
@@ -46,19 +45,48 @@ const styles = StyleSheet.create({
   },
 });
 
-export default class RouteDetailsScreen extends React.Component {
+class RouteDetailsScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       active: 'observing',
-      dialog: false
+      dialog: {}
     };
   }
 
   static navigationOptions = {
     title: 'RouteDetails',
   };
+
+  onCloseDialog() {
+    if (this.state.dialog.status === 'success') {
+      this.setState({ dialog: {} });
+      this.props.navigation.goBack();
+    } else if (this.state.dialog.status === 'error') {
+      this.setState({ dialog: {} });
+    }
+  }
+
+  async likeRoute() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.likeRoute(this.props.navigation.state.params.route.routeId);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
+  }
+
+  async finishPriceTesting() {
+    try {
+      this.setState({ dialog: { status: 'progress' }});
+      await this.props.finishPriceTestingAuction(this.props.navigation.state.params.route.routeId);
+      this.setState({ dialog: { status: 'success', text: 'Success' }});
+    } catch (error) {
+      this.setState({ dialog: { status: 'error', text: `Error: ${error.response && error.response.data.error.message}` }});
+    }
+  }
 
   render() {
     const { route } = this.props.navigation.state.params;
@@ -85,12 +113,16 @@ export default class RouteDetailsScreen extends React.Component {
           <Text style={styles.title}>{route.title}</Text>
           <Subheader text="Description" />
           <Text style={styles.description}>{route.description}</Text>
+          {route.status === 'OBSERVABLE' && <Subheader text="Number of Likes" />}
+          {route.status === 'OBSERVABLE' && <Text style={styles.description}>{route.likes && route.likes.length} likes</Text>}
+          {route.status === 'SHORT_LIST' && <Subheader text="Full Price" />}
+          {route.status === 'SHORT_LIST' && <Text style={styles.description}>{route.price} Travel Coins</Text>}
           {route.routeElements.map((routeElement, i) => (
             <ListItem
               key={'routeElement' + i}
               divider
-              leftElement={routeElement.imageUrl
-                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: routeElement.imageUrl}} />} />)
+              leftElement={routeElement.mediaUrl
+                ? (<Avatar image={<Image style={{ width: '100%', height: '100%', borderRadius: 25}} source={{uri: routeElement.mediaUrl}} />} />)
                 : (<Avatar text={routeElement.title[0]} />)}
               centerElement={{
                 primaryText: routeElement.title,
@@ -102,22 +134,36 @@ export default class RouteDetailsScreen extends React.Component {
             />
           ))}
         </ScrollView>
-        {route.status === 'Observable' &&
+        {route.status === 'OBSERVABLE' &&
           <Button
             primary
             raised
             style={{container : styles.button}}
-            onPress={() => this.setState({ dialog: true })}
+            onPress={() => this.likeRoute()}
             text="Like" />}
-        {route.status === 'Short List' &&
+        {route.status === 'SHORT_LIST' &&
           <Button
             primary 
             raised
             style={{container : styles.button}}
             onPress={() => this.props.navigation.navigate('BookRoute', { route })}
             text="Book" />}
-        <ProgressDialog visible={this.state.dialog} status="success" text="Liked" onClose={() => this.setState({ dialog: false })} />
+        {route.status === 'PRICE_TESTING' && route.creator === `resource:org.travelchain.network.User#${this.props.user.userId}` &&
+          <Button
+            primary 
+            raised
+            style={{container : styles.button}}
+            onPress={() => this.finishPriceTesting()}
+            text="Finish Price Testing Auction" />}
+        <ProgressDialog visible={!!this.state.dialog.status} status={this.state.dialog.status} text={this.state.dialog.text} onClose={() => this.onCloseDialog()} />
       </Container>
     );
   }
 }
+
+export default connect(
+  (state) => ({
+    user: state.wallet.user,
+  }),
+  { likeRoute, finishPriceTestingAuction }
+)(RouteDetailsScreen);
